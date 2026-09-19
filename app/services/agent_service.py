@@ -16,3 +16,10 @@ class AgentService():
         if not fn:
             return fn
         return fn(self.calendar_service, **arguments)
+
+    def chat(self, message: str):
+        substrings = ["list", "events", "what's on"]
+        msg = message.lower()
+        if any(sub in msg for sub in substrings):
+            return self.run("list_calendar_events")
+        return None

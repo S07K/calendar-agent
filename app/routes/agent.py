@@ -24,5 +24,7 @@ def run(tool_details: ToolDetails, service: AgentService = Depends(get_agent_ser
 
 @router.post("/chat")
 def chat(request: AgentChatRequest, service: AgentService = Depends(get_agent_service)):
-    response = service.run(tool="list_calendar_events")
+    response = service.chat(request.message)
+    if(not isinstance(response, list) and not response):
+        raise HTTPException(status_code=400, detail="Could not understand (LLM next)") 
     return response
