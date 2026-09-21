@@ -24,7 +24,12 @@ def run(tool_details: ToolDetails, service: AgentService = Depends(get_agent_ser
 
 @router.post("/chat")
 def chat(request: AgentChatRequest, service: AgentService = Depends(get_agent_service)):
-    response = service.chat(request.message)
-    if(not isinstance(response, list) and not response):
-        raise HTTPException(status_code=400, detail="Could not understand (LLM next)") 
-    return response
+    outcome = service.chat(request.message)
+    if(outcome is None):
+        raise HTTPException(status_code=400, detail="Could not understand")
+    tool, result, reply = outcome
+    if(tool == "create_calendar_event" and result is None):
+        raise HTTPException(status_code=409, detail="Slot not available")
+    elif(tool == "get_calendar_event" and result is None):
+        raise HTTPException(status_code=404, detail="Event Not Found")
+    return {"reply": reply, "result": result}

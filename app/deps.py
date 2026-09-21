@@ -1,10 +1,13 @@
+from app.config import Settings
 from app.services.agent_service import AgentService
 from app.services.calendar_service import CalendarService
 from app.services.notification_service import NotificationService
 
 notification_service = NotificationService()
 calendar_service = CalendarService(notification_service)
-agent_service = AgentService(calendar_service)
+settings = Settings()
+agent_service = AgentService(calendar_service, settings)
+
 
 def get_calendar_service() -> CalendarService:
     return calendar_service
